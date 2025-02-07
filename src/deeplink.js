@@ -1,5 +1,5 @@
 import axios from "axios";
-import { sign } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { PRODUCTION_BASE, SANDBOX_BASE } from "./constants";
 
 class Deeplink {
@@ -31,17 +31,19 @@ class Deeplink {
     if (this.authType === "JWT") {
       this.headers["Authorization"] = this.generateJwtToken();
     } else {
-      this.headers["Authorization"] = this.generateOAuthToken();
+      throw new Error(`${this.authType} is not supported yet`);
     }
   }
 
   generateJwtToken() {
-    return sign({}, this.secret, { algorithm: "HS256" });
-  }
-
-  generateOAuthToken() {
-    // Implement OAuth token generation logic
-    return "OAuthToken";
+    return jwt.sign(
+      {
+        aud: this.schemeId,
+        iat: Math.floor(Date.now() / 1000),
+      },
+      this.secret,
+      { algorithm: "HS256" }
+    );
   }
 
   exceptionHandler(error) {
