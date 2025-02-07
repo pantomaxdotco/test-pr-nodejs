@@ -97,9 +97,35 @@ class Deeplink {
     );
     return response.data;
   }
+
+  /**
+   * Expire payment link.
+   * @param {string} platformBillId - The platform bill ID.
+   */
+  expirePaymentLink(platformBillId) {
+    const baseUrl = this.getUrlPath("/utilities/bills/");
+    const headers = {
+      ...this.headers,
+      "Idempotent-Key": generateUniqueId(),
+    };
+
+    res = fetch(`${baseUrl}${platformBillId}/expire`, {
+      method: "POST",
+      headers: headers,
+    });
+    return res.json();
+  }
 }
 
 export default Deeplink;
+
+/**
+ * Generate a unique ID.
+ * @returns {number} A unique ID.
+ */
+function generateUniqueId() {
+  return Math.floor(100000000 + Math.random() * 900000000);
+}
 
 const getUrlPath = (endpoint, authType = "JWT", mode = "SANDBOX") => {
   /**
